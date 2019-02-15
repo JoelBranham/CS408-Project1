@@ -11,12 +11,12 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class CalculatorActivity extends AppCompatActivity {
 
-
-    double result, currentNum;
-    String currentOperator;
-
+    String operator;
+    double prevNum, currentNum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,43 +34,67 @@ public class CalculatorActivity extends AppCompatActivity {
             }
         });
 
-        double result = currentNum = 0.0;
+        operator = "";
+        prevNum = currentNum = 0.0;
     }
 
     public void buttonClicked(View v){
-        String id = Integer.toString(v.getId());
+        Button b = findViewById(v.getId());
+        String id = (b.getResources().getResourceName(b.getId())).split("/")[1];
 
-        switch(id){
-            case "squareRootButton": currentOperator = id;
+        TextView t = (TextView) findViewById(R.id.resultTextView);
+        t.setText(id);
+
+        switch(id) {
+            case "squareRootButton":
                 break;
-            case "clearButton": currentOperator = id;
+            case "clearButton":
+                operator = "";
+                prevNum = currentNum = 0.0;
                 break;
-            case "divisionButton": currentOperator = id;
+            case "divisionButton":
                 break;
-            case "percentButton": currentOperator = id;
+            case "percentButton":
                 break;
-            case "multiplicationButton": currentOperator = id;
+            case "multiplicationButton":
                 break;
-            case "subtractionButton": currentOperator = id;
+            case "subtractionButton":
+                operator = "-";
                 break;
             case "decimalButton":
                 break;
             case "additionButton":
+                operator = "+";
                 break;
-            case "equalButton": calculateResult();
+            case "signButton":
+                break;
+            case "equalButton":
+                calculateResult();
                 break;
             default:
                 Button numberButton = findViewById(v.getId());
-                int buttonValue = Integer.valueOf(numberButton.getText().toString());
+                prevNum = currentNum;
+                currentNum = Double.valueOf(numberButton.getText().toString());
         }
-
-//        TextView t = (TextView) findViewById(R.id.resultTextView);
-//        t.setText(id);
-
     }
 
-    public void calculateResult(){
 
+
+
+
+    public void calculateResult(){
+        double result = 0.0;
+        switch(operator){
+            case "+":
+                result = prevNum + currentNum;
+                break;
+            case "-":
+                result = prevNum - currentNum;
+                break;
+        }
+
+        TextView t = (TextView) findViewById(R.id.resultTextView);
+        t.setText(Double.toString(result));
     }
 
 
