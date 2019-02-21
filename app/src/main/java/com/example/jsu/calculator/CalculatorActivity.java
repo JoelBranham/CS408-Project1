@@ -43,47 +43,62 @@ public class CalculatorActivity extends AppCompatActivity {
         String id = (b.getResources().getResourceName(b.getId())).split("/")[1];
 
         TextView t = (TextView) findViewById(R.id.resultTextView);
-        t.setText(id);
 
         switch(id) {
             case "squareRootButton":
+                currentNum = Math.sqrt(currentNum);
+                t.setText(Double.toString(currentNum));
                 break;
             case "clearButton":
                 operator = "";
                 prevNum = currentNum = 0.0;
+                t.setText(Double.toString(currentNum));
                 break;
             case "divisionButton":
+                calculateResult();
+                operator = "/";
                 break;
             case "percentButton":
+                if (operator.equals("+")){
+                    currentNum = prevNum * (currentNum / 100.0);
+                }
+                else if (operator.equals("*")){
+                    currentNum = currentNum / 100.0;
+                }
+                t.setText(Double.toString(currentNum));
                 break;
             case "multiplicationButton":
+                calculateResult();
+                operator = "*";
                 break;
             case "subtractionButton":
+                calculateResult();
                 operator = "-";
                 break;
             case "decimalButton":
                 break;
             case "additionButton":
+                calculateResult();
                 operator = "+";
                 break;
             case "signButton":
+                currentNum = 0 - currentNum;
+                t.setText(Double.toString(currentNum));
                 break;
             case "equalButton":
                 calculateResult();
                 break;
             default:
-                Button numberButton = findViewById(v.getId());
+                t.setText(b.getText());
                 prevNum = currentNum;
-                currentNum = Double.valueOf(numberButton.getText().toString());
+                currentNum = Double.valueOf(b.getText().toString());
         }
     }
 
 
-
-
-
     public void calculateResult(){
         double result = 0.0;
+
         switch(operator){
             case "+":
                 result = prevNum + currentNum;
@@ -91,10 +106,21 @@ public class CalculatorActivity extends AppCompatActivity {
             case "-":
                 result = prevNum - currentNum;
                 break;
+            case "/":
+                result = prevNum / currentNum;
+                break;
+            case "*":
+                result = prevNum * currentNum;
+                break;
+            default:
+                result = currentNum;
         }
+
+        currentNum = result;
 
         TextView t = (TextView) findViewById(R.id.resultTextView);
         t.setText(Double.toString(result));
+
     }
 
 
