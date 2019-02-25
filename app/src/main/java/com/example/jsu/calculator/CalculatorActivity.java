@@ -11,12 +11,11 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 public class CalculatorActivity extends AppCompatActivity {
 
-    String operator;
+    String operator, enteredNum;
     double prevNum, currentNum;
+    boolean equalLastPressed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +33,9 @@ public class CalculatorActivity extends AppCompatActivity {
             }
         });
 
-        operator = "";
+        operator = enteredNum = "";
         prevNum = currentNum = 0.0;
+        equalLastPressed = false;
     }
 
     public void buttonClicked(View v){
@@ -45,61 +45,80 @@ public class CalculatorActivity extends AppCompatActivity {
         TextView t = (TextView) findViewById(R.id.resultTextView);
 
         switch(id) {
-            case "squareRootButton":
-                currentNum = Math.sqrt(currentNum);
-                t.setText(Double.toString(currentNum));
+            case "additionButton":
+                if (!equalLastPressed){
+                    calculateResult();
+                }
+                operator = "+";
                 break;
-            case "clearButton":
-                operator = "";
-                prevNum = currentNum = 0.0;
-                t.setText(Double.toString(currentNum));
+            case "subtractionButton":
+                if (!equalLastPressed){
+                    calculateResult();
+                }
+                operator = "-";
+                break;
+            case "multiplicationButton":
+                if (!equalLastPressed){
+                    calculateResult();
+                }
+                operator = "*";
                 break;
             case "divisionButton":
-                calculateResult();
+                if (!equalLastPressed){
+                    calculateResult();
+                }
                 operator = "/";
                 break;
+            case "squareRootButton":
+                currentNum = Double.valueOf(enteredNum);
+                currentNum = Math.sqrt(currentNum);
+                enteredNum = Double.toString(currentNum);
+                t.setText(enteredNum);
+                break;
+            case "clearButton":
+                operator = enteredNum = "";
+                prevNum = currentNum = 0.0;
+                t.setText(enteredNum);
+                break;
             case "percentButton":
+                currentNum = Double.valueOf(enteredNum);
                 if (operator.equals("+")){
                     currentNum = prevNum * (currentNum / 100.0);
                 }
                 else if (operator.equals("*")){
                     currentNum = currentNum / 100.0;
                 }
-                t.setText(Double.toString(currentNum));
-                break;
-            case "multiplicationButton":
-                calculateResult();
-                operator = "*";
-                break;
-            case "subtractionButton":
-                calculateResult();
-                operator = "-";
+                enteredNum = Double.toString(currentNum);
+                t.setText(enteredNum);
                 break;
             case "decimalButton":
-                break;
-            case "additionButton":
-                calculateResult();
-                operator = "+";
+                enteredNum += ".";
                 break;
             case "signButton":
+                currentNum = Double.valueOf(enteredNum);
                 currentNum = 0 - currentNum;
-                t.setText(Double.toString(currentNum));
+                enteredNum = Double.toString(currentNum);
+                t.setText(enteredNum);
                 break;
             case "equalButton":
                 calculateResult();
                 break;
             default:
-                t.setText(b.getText());
-                prevNum = currentNum;
-                currentNum = Double.valueOf(b.getText().toString());
+                enteredNum = enteredNum + b.getText().toString();
+                t.setText(enteredNum);
         }
-    }
 
+        equalLastPressed = id.equals("equalButton");
+    }
 
     public void calculateResult(){
         double result = 0.0;
 
-        switch(operator){
+        if (!enteredNum.equals("")){
+            currentNum = Double.valueOf(enteredNum);
+        }
+
+        switch (operator) {
             case "+":
                 result = prevNum + currentNum;
                 break;
@@ -116,13 +135,13 @@ public class CalculatorActivity extends AppCompatActivity {
                 result = currentNum;
         }
 
-        currentNum = result;
+        prevNum = result;
 
         TextView t = (TextView) findViewById(R.id.resultTextView);
         t.setText(Double.toString(result));
 
+        enteredNum = "";
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
