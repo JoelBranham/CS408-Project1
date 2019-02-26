@@ -13,9 +13,17 @@ import android.widget.TextView;
 
 public class CalculatorActivity extends AppCompatActivity {
 
-    String operator, enteredNum;
+    public enum Operator {
+        CLEAR,
+        ADDITION,
+        SUBTRACTION,
+        MULTIPLICATION,
+        DIVISION;
+    };
+
+    Operator lastOperator;
     double prevNum, currentNum;
-    boolean equalLastPressed;
+    boolean repeatOperation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,9 +41,9 @@ public class CalculatorActivity extends AppCompatActivity {
             }
         });
 
-        operator = enteredNum = "";
+        lastOperator = Operator.CLEAR;
         prevNum = currentNum = 0.0;
-        equalLastPressed = false;
+        repeatOperation = true;
     }
 
     public void buttonClicked(View v){
@@ -43,49 +51,50 @@ public class CalculatorActivity extends AppCompatActivity {
         String id = (b.getResources().getResourceName(b.getId())).split("/")[1];
 
         TextView t = (TextView) findViewById(R.id.resultTextView);
+        String enteredNum = t.getText().toString();
 
         switch(id) {
             case "additionButton":
-                if (!equalLastPressed){
+                if (repeatOperation){
                     calculateResult();
                 }
-                operator = "+";
+                lastOperator = Operator.ADDITION;
                 break;
             case "subtractionButton":
-                if (!equalLastPressed){
+                if (repeatOperation){
                     calculateResult();
                 }
-                operator = "-";
+                lastOperator = Operator.SUBTRACTION;
                 break;
             case "multiplicationButton":
-                if (!equalLastPressed){
+                if (repeatOperation){
                     calculateResult();
                 }
-                operator = "*";
+                lastOperator = Operator.MULTIPLICATION;
                 break;
             case "divisionButton":
-                if (!equalLastPressed){
+                if (repeatOperation){
                     calculateResult();
                 }
-                operator = "/";
+                lastOperator = Operator.DIVISION;
                 break;
             case "squareRootButton":
                 currentNum = Double.valueOf(enteredNum);
                 currentNum = Math.sqrt(currentNum);
-                enteredNum = Double.toString(currentNum);
-                t.setText(enteredNum);
+                t.setText(Double.toString(currentNum));
+                prevNum = currentNum;
                 break;
             case "clearButton":
-                operator = enteredNum = "";
+                lastOperator = Operator.CLEAR;
                 prevNum = currentNum = 0.0;
-                t.setText(enteredNum);
+                t.setText(Double.toString(currentNum));
                 break;
             case "percentButton":
                 currentNum = Double.valueOf(enteredNum);
-                if (operator.equals("+")){
+                if (lastOperator == Operator.ADDITION){
                     currentNum = prevNum * (currentNum / 100.0);
                 }
-                else if (operator.equals("*")){
+                else if (lastOperator == Operator.MULTIPLICATION){
                     currentNum = currentNum / 100.0;
                 }
                 enteredNum = Double.toString(currentNum);
@@ -95,10 +104,9 @@ public class CalculatorActivity extends AppCompatActivity {
                 enteredNum += ".";
                 break;
             case "signButton":
-                currentNum = Double.valueOf(enteredNum);
-                currentNum = 0 - currentNum;
-                enteredNum = Double.toString(currentNum);
-                t.setText(enteredNum);
+                currentNum = 0 - Double.valueOf(enteredNum);
+                t.setText(Double.toString(currentNum));
+                prevNum = currentNum;
                 break;
             case "equalButton":
                 calculateResult();
@@ -108,27 +116,31 @@ public class CalculatorActivity extends AppCompatActivity {
                 t.setText(enteredNum);
         }
 
-        equalLastPressed = id.equals("equalButton");
+        repeatOperation = !id.equals("equalButton");
     }
 
     public void calculateResult(){
+        TextView t = (TextView) findViewById(R.id.resultTextView);
+
         double result = 0.0;
+
+        String enteredNum = t.getText().toString();
 
         if (!enteredNum.equals("")){
             currentNum = Double.valueOf(enteredNum);
         }
 
-        switch (operator) {
-            case "+":
+        switch (lastOperator) {
+            case ADDITION:
                 result = prevNum + currentNum;
                 break;
-            case "-":
+            case SUBTRACTION:
                 result = prevNum - currentNum;
                 break;
-            case "/":
+            case DIVISION:
                 result = prevNum / currentNum;
                 break;
-            case "*":
+            case MULTIPLICATION:
                 result = prevNum * currentNum;
                 break;
             default:
@@ -137,10 +149,8 @@ public class CalculatorActivity extends AppCompatActivity {
 
         prevNum = result;
 
-        TextView t = (TextView) findViewById(R.id.resultTextView);
         t.setText(Double.toString(result));
 
-        enteredNum = "";
     }
 
     @Override
