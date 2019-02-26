@@ -21,6 +21,8 @@ public class CalculatorActivity extends AppCompatActivity {
         DIVISION;
     };
 
+
+    String enteredNum;
     Operator lastOperator;
     double prevNum, currentNum;
     boolean repeatOperation;
@@ -42,6 +44,7 @@ public class CalculatorActivity extends AppCompatActivity {
         });
 
         lastOperator = Operator.CLEAR;
+        enteredNum = "";
         prevNum = currentNum = 0.0;
         repeatOperation = true;
     }
@@ -51,7 +54,6 @@ public class CalculatorActivity extends AppCompatActivity {
         String id = (b.getResources().getResourceName(b.getId())).split("/")[1];
 
         TextView t = (TextView) findViewById(R.id.resultTextView);
-        String enteredNum = t.getText().toString();
 
         switch(id) {
             case "additionButton":
@@ -78,15 +80,25 @@ public class CalculatorActivity extends AppCompatActivity {
                 }
                 lastOperator = Operator.DIVISION;
                 break;
+            case "decimalButton":
+                enteredNum += ".";
+                break;
             case "squareRootButton":
-                currentNum = Double.valueOf(enteredNum);
+                if (enteredNum.equals("")){
+                    currentNum = prevNum;
+                }
+                else{
+                    currentNum = Double.valueOf(enteredNum);
+                }
                 currentNum = Math.sqrt(currentNum);
                 t.setText(Double.toString(currentNum));
                 prevNum = currentNum;
+                enteredNum = "";
                 break;
             case "clearButton":
                 lastOperator = Operator.CLEAR;
                 prevNum = currentNum = 0.0;
+                enteredNum = "";
                 t.setText(Double.toString(currentNum));
                 break;
             case "percentButton":
@@ -100,13 +112,11 @@ public class CalculatorActivity extends AppCompatActivity {
                 enteredNum = Double.toString(currentNum);
                 t.setText(enteredNum);
                 break;
-            case "decimalButton":
-                enteredNum += ".";
-                break;
             case "signButton":
-                currentNum = 0 - Double.valueOf(enteredNum);
+                String displayedNum = t.getText().toString();
+                currentNum = 0 - Double.valueOf(displayedNum);
                 t.setText(Double.toString(currentNum));
-                prevNum = currentNum;
+                enteredNum = "";
                 break;
             case "equalButton":
                 calculateResult();
@@ -116,15 +126,11 @@ public class CalculatorActivity extends AppCompatActivity {
                 t.setText(enteredNum);
         }
 
-        repeatOperation = !id.equals("equalButton");
+        repeatOperation = !id.equals("equalButton") && !id.equals("squareRootButton") && !id.equals("signButton");
     }
 
     public void calculateResult(){
-        TextView t = (TextView) findViewById(R.id.resultTextView);
-
         double result = 0.0;
-
-        String enteredNum = t.getText().toString();
 
         if (!enteredNum.equals("")){
             currentNum = Double.valueOf(enteredNum);
@@ -149,8 +155,10 @@ public class CalculatorActivity extends AppCompatActivity {
 
         prevNum = result;
 
+        TextView t = (TextView) findViewById(R.id.resultTextView);
         t.setText(Double.toString(result));
 
+        enteredNum = "";
     }
 
     @Override
