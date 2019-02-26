@@ -102,7 +102,10 @@ public class CalculatorActivity extends AppCompatActivity {
                 break;
             case "percentButton":
                 currentNum = Double.valueOf(displayNum);
-                if (lastOperator == Operator.ADDITION){
+                if (lastOperator == Operator.CLEAR){
+                    currentNum = 0.0;
+                }
+                else if (lastOperator == Operator.ADDITION){
                     currentNum = prevNum * (currentNum / 100.0);
                 }
                 else if (lastOperator == Operator.MULTIPLICATION){
