@@ -19,7 +19,8 @@ public class CalculatorActivity extends AppCompatActivity {
         SUBTRACTION,
         MULTIPLICATION,
         DIVISION,
-        CHANGE_SIGN;
+        CHANGE_SIGN,
+        SQUAREROOT;
     };
 
 
@@ -87,12 +88,16 @@ public class CalculatorActivity extends AppCompatActivity {
                 enteredNum += ".";
                 break;
             case "squareRootButton":
+                if (!repeatOperation){
+                    lastOperator = Operator.SQUAREROOT;
+                }
                 if (t.getText().equals("")){
                     currentNum = 0.0;
                 }
                 else{
                     currentNum = Math.sqrt(Double.valueOf(displayNum));
                 }
+                enteredNum = Double.toString(currentNum);
                 t.setText(Double.toString(currentNum));
                 break;
             case "percentButton":
