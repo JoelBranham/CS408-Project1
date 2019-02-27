@@ -20,14 +20,15 @@ public class CalculatorActivity extends AppCompatActivity {
         MULTIPLICATION,
         DIVISION,
         CHANGE_SIGN,
-        SQUAREROOT;
+        SQUAREROOT,
+        PERCENT;
     };
 
 
     String enteredNum;
     Operator lastOperator;
     double prevNum, currentNum;
-    boolean repeatOperation;
+    boolean computeValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +49,10 @@ public class CalculatorActivity extends AppCompatActivity {
         lastOperator = Operator.CLEAR;
         enteredNum = "";
         prevNum = currentNum = 0.0;
-        repeatOperation = true;
+        computeValue = true;
+
+        TextView t = findViewById(R.id.resultTextView);
+        t.setText("0.0");
     }
 
     public void buttonClicked(View v){
@@ -61,25 +65,25 @@ public class CalculatorActivity extends AppCompatActivity {
 
         switch(id) {
             case "additionButton":
-                if (repeatOperation){
+                if (computeValue){
                     calculateResult();
                 }
                 lastOperator = Operator.ADDITION;
                 break;
             case "subtractionButton":
-                if (repeatOperation){
+                if (computeValue){
                     calculateResult();
                 }
                 lastOperator = Operator.SUBTRACTION;
                 break;
             case "multiplicationButton":
-                if (repeatOperation){
+                if (computeValue){
                     calculateResult();
                 }
                 lastOperator = Operator.MULTIPLICATION;
                 break;
             case "divisionButton":
-                if (repeatOperation){
+                if (computeValue){
                     calculateResult();
                 }
                 lastOperator = Operator.DIVISION;
@@ -88,7 +92,7 @@ public class CalculatorActivity extends AppCompatActivity {
                 enteredNum += ".";
                 break;
             case "squareRootButton":
-                if (!repeatOperation){
+                if (!computeValue){
                     lastOperator = Operator.SQUAREROOT;
                 }
                 if (t.getText().equals("")){
@@ -105,17 +109,20 @@ public class CalculatorActivity extends AppCompatActivity {
                 if (lastOperator == Operator.CLEAR){
                     currentNum = 0.0;
                 }
-                else if (lastOperator == Operator.ADDITION){
+                else if (lastOperator == Operator.ADDITION || lastOperator == Operator.SUBTRACTION){
                     currentNum = prevNum * (currentNum / 100.0);
                 }
-                else if (lastOperator == Operator.MULTIPLICATION){
+                else if (lastOperator == Operator.MULTIPLICATION || lastOperator == Operator.DIVISION){
                     currentNum = currentNum / 100.0;
+                }
+                if (!computeValue){
+                    lastOperator = Operator.PERCENT;
                 }
                 enteredNum = Double.toString(currentNum);
                 t.setText(enteredNum);
                 break;
             case "signButton":
-                if (!repeatOperation){
+                if (!computeValue){
                     lastOperator = Operator.CHANGE_SIGN;
                 }
                 currentNum = 0 - Double.valueOf(displayNum);
@@ -136,7 +143,11 @@ public class CalculatorActivity extends AppCompatActivity {
                 t.setText(enteredNum);
         }
 
-        repeatOperation = !id.equals("equalButton");
+        computeValue = !id.equals("equalButton")
+                && !id.equals("additionButton")
+                && !id.equals("multiplicationButton")
+                && !id.equals("subtractionButton")
+                && !id.equals("divisionButton");
     }
 
     public void calculateResult(){
@@ -145,7 +156,7 @@ public class CalculatorActivity extends AppCompatActivity {
         TextView t = (TextView) findViewById(R.id.resultTextView);
         enteredNum = t.getText().toString();
 
-        if (repeatOperation && !enteredNum.equals("")){
+        if (computeValue && !enteredNum.equals("")){
             currentNum = Double.valueOf(enteredNum);
         }
 
